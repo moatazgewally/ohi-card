@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>معهد أكتوبر العالي للهندسة والتكنولوجيا | الهوية الرقمية الشاملة OHI</title>
     
-    <!-- Google Fonts: Cairo & Inter -->
+    <!-- Google Fonts: Cairo (Arabic), Plus Jakarta Sans (English) & Great Vibes (Logo Script) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,15 +24,17 @@
             theme: {
                 extend: {
                     colors: {
-                        ohiNavy: '#0F294A',
-                        ohiNavyLight: '#1A3F6E',
+                        ohiBlue: '#00529B',
+                        ohiNavy: '#003366',
+                        ohiNavyDark: '#002244',
                         ohiGold: '#D97706',
                         ohiGoldLight: '#F59E0B',
-                        ohiBg: '#F8FAFC'
+                        ohiGrey: '#7A7D82'
                     },
                     fontFamily: {
                         cairo: ['Cairo', 'sans-serif'],
-                        inter: ['Inter', 'sans-serif']
+                        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+                        script: ['Great Vibes', 'cursive']
                     }
                 }
             }
@@ -47,15 +49,15 @@
             overflow-x: hidden;
         }
         .en-font {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
         }
         .hero-gradient {
-            background: linear-gradient(135deg, #0F294A 0%, #163A66 60%, #1E4D85 100%);
+            background: linear-gradient(135deg, #002244 0%, #003366 55%, #00529B 100%);
         }
         .gold-gradient {
             background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
@@ -65,97 +67,129 @@
         }
         .link-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px -5px rgba(15, 41, 74, 0.12);
-            border-color: #D97706;
+            box-shadow: 0 12px 24px -6px rgba(0, 51, 102, 0.14);
+            border-color: #00529B;
         }
-        #qrcode img, #qrcode canvas {
+        #qrcode-inline canvas, #qrcode-inline img,
+        #qrcode-modal canvas, #qrcode-modal img {
             margin: 0 auto;
-            border-radius: 12px;
+            display: block;
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center pb-12">
+<body class="min-h-screen flex flex-col items-center pb-10">
 
     <!-- Toast Notification Box (Replaces alert) -->
     <div id="toast" class="fixed bottom-5 left-1/2 transform -translate-x-1/2 z-50 hidden transition-all duration-300">
-        <div class="bg-ohiNavy text-white px-6 py-3 rounded-full shadow-2xl border border-ohiGold flex items-center gap-3">
+        <div class="bg-ohiNavyDark text-white px-6 py-3 rounded-full shadow-2xl border border-ohiGold flex items-center gap-3 whitespace-nowrap">
             <i id="toast-icon" class="fa-solid fa-circle-check text-ohiGoldLight text-lg"></i>
-            <span id="toast-msg" class="text-sm font-semibold">تم تنفيذ العملية بنجاح</span>
+            <span id="toast-msg" class="text-sm font-semibold">تم النسخ بنجاح</span>
         </div>
     </div>
 
-    <!-- Top Control Bar -->
+    <!-- Top Quick Bar -->
     <div class="w-full max-w-2xl px-4 pt-4 flex justify-between items-center z-20">
-        <button onclick="toggleQrModal()" class="bg-white/90 hover:bg-white text-ohiNavy px-4 py-2 rounded-full shadow-sm border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-2 transition cursor-pointer">
-            <i class="fa-solid fa-qrcode text-ohiGold text-base"></i>
-            <span>عرض كود QR</span>
+        <button onclick="toggleQrModal()" class="bg-white hover:bg-slate-50 text-ohiNavy px-4 py-2 rounded-full shadow-sm border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-2 transition cursor-pointer">
+            <i class="fa-solid fa-qrcode text-ohiBlue text-base"></i>
+            <span>تكبير كود QR</span>
         </button>
 
-        <div class="flex items-center gap-2">
-            <button onclick="shareProfile()" class="bg-white/90 hover:bg-white text-ohiNavy p-2.5 rounded-full shadow-sm border border-slate-200 transition cursor-pointer" title="مشاركة الرابط">
-                <i class="fa-solid fa-share-nodes text-ohiNavy"></i>
-            </button>
-            <button onclick="toggleEditModal()" class="bg-ohiNavy hover:bg-ohiNavyLight text-white px-4 py-2 rounded-full shadow-sm text-xs sm:text-sm font-bold flex items-center gap-2 transition cursor-pointer">
-                <i class="fa-solid fa-pen-to-square text-ohiGoldLight"></i>
-                <span>تخصيص البيانات</span>
-            </button>
-        </div>
+        <button onclick="shareProfile()" class="bg-white hover:bg-slate-50 text-ohiNavy px-4 py-2 rounded-full shadow-sm border border-slate-200 text-xs sm:text-sm font-bold flex items-center gap-2 transition cursor-pointer" title="مشاركة الصفحة">
+            <i class="fa-solid fa-share-nodes text-ohiGold"></i>
+            <span>مشاركة البطاقة</span>
+        </button>
     </div>
 
     <!-- Main Container -->
     <main class="w-full max-w-2xl px-4 mt-3 space-y-6">
 
-        <!-- 1. Header & Digital Identity Card -->
+        <!-- 1. Header & Official OHI Brand Identity Card -->
         <section class="rounded-3xl overflow-hidden shadow-xl bg-white border border-slate-200">
-            <!-- Banner -->
-            <div class="hero-gradient pt-8 pb-16 px-6 text-center relative overflow-hidden">
-                <!-- Decorative Circles -->
-                <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/5"></div>
-                <div class="absolute -bottom-12 -left-10 w-48 h-48 rounded-full bg-ohiGold/10"></div>
+            <!-- Royal Navy Banner -->
+            <div class="hero-gradient pt-8 pb-20 px-6 text-center relative overflow-hidden">
+                <!-- Subtle Geometric Accents -->
+                <div class="absolute -top-12 -right-12 w-44 h-44 rounded-full bg-white/5"></div>
+                <div class="absolute -bottom-14 -left-12 w-52 h-52 rounded-full bg-ohiGold/10"></div>
                 
-                <span class="inline-block bg-white/10 text-amber-300 border border-amber-400/30 text-xs font-bold px-3.5 py-1 rounded-full mb-3">
-                    الهوية الرقمية الشاملة • All-in-One Digital Profile
+                <span class="inline-block bg-white/10 text-amber-300 border border-amber-400/30 text-xs font-bold px-4 py-1.5 rounded-full">
+                    البوابة الرقمية الشاملة • All-in-One Digital Profile
                 </span>
             </div>
 
-            <!-- Profile Logo & Titles -->
-            <div class="px-6 pb-7 -mt-12 text-center relative z-10">
-                <div class="w-28 h-28 mx-auto bg-white rounded-2xl shadow-lg p-2.5 border-2 border-ohiGold/40 flex items-center justify-center">
-                    <img id="display-logo" 
-                         src="https://ohi.edu.eg/arabic/wp-content/uploads/2024/05/cropped-logo-svg-2.png" 
-                         alt="شعار معهد أكتوبر العالي للهندسة والتكنولوجيا" 
-                         onerror="this.onerror=null; this.src='https://placehold.co/150x150/0F294A/F59E0B?text=OHI';"
-                         class="w-full h-full object-contain rounded-xl">
+            <!-- Official OHI Logo Container -->
+            <div class="px-6 pb-8 -mt-14 text-center relative z-10">
+                <div class="w-36 h-36 mx-auto bg-white rounded-3xl shadow-lg p-3 border-2 border-slate-100 flex items-center justify-center">
+                    <!-- High-Resolution Custom SVG reproducing the Official OHI Logo -->
+                    <svg viewBox="0 0 320 310" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="شعار معهد أكتوبر العالي للهندسة والتكنولوجيا OHI">
+                        <defs>
+                            <linearGradient id="ohiBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#0066B3"/>
+                                <stop offset="55%" stop-color="#00529B"/>
+                                <stop offset="100%" stop-color="#003B73"/>
+                            </linearGradient>
+                            <linearGradient id="ohiGreyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#6B7280"/>
+                                <stop offset="50%" stop-color="#8E939B"/>
+                                <stop offset="100%" stop-color="#5B616A"/>
+                            </linearGradient>
+                            <filter id="logoShadow" x="-10%" y="-10%" width="120%" height="120%">
+                                <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#002244" flood-opacity="0.18"/>
+                            </filter>
+                        </defs>
+
+                        <!-- Circular Crescent 'O' -->
+                        <path d="M 134 38 
+                                 A 98 98 0 1 0 232 136 
+                                 A 98 98 0 0 0 134 38 Z 
+                                 M 140 46 
+                                 A 90 90 0 1 1 50 136 
+                                 A 90 90 0 0 1 140 46 Z" 
+                              fill="url(#ohiBlueGrad)" filter="url(#logoShadow)"/>
+
+                        <!-- Serif Vertical Stem of 'H' -->
+                        <path d="M 112 76 L 154 76 L 154 81 C 145 82 143 85 143 93 L 143 226 C 143 234 145 237 154 238 L 154 243 L 112 243 L 112 238 C 121 237 123 234 123 226 L 123 93 C 123 85 121 82 112 81 Z" 
+                              fill="url(#ohiBlueGrad)" filter="url(#logoShadow)"/>
+
+                        <!-- Horizontal Crossbar of 'H' -->
+                        <rect x="148" y="152" width="84" height="14" rx="1.5" fill="url(#ohiBlueGrad)" filter="url(#logoShadow)"/>
+
+                        <!-- Grey 'i' Oval Dot -->
+                        <ellipse cx="255" cy="90" rx="8" ry="20" fill="url(#ohiGreyGrad)" filter="url(#logoShadow)"/>
+
+                        <!-- Grey 'i' Vertical Stem -->
+                        <rect x="245" y="122" width="20" height="121" rx="1.5" fill="url(#ohiGreyGrad)" filter="url(#logoShadow)"/>
+
+                        <!-- Calligraphic Script Tagline: We Build the Future -->
+                        <text x="160" y="284" text-anchor="middle" fill="#111827" font-family="'Great Vibes', cursive" font-size="37" font-weight="600" letter-spacing="0.5">
+                            We Build the Future
+                        </text>
+                    </svg>
                 </div>
 
-                <h1 id="display-name-ar" class="mt-4 text-xl sm:text-2xl font-extrabold text-ohiNavy leading-snug">
+                <h1 class="mt-4 text-xl sm:text-2xl font-extrabold text-ohiNavy leading-snug">
                     معهد أكتوبر العالي للهندسة والتكنولوجيا
                 </h1>
-                <p id="display-name-en" class="en-font text-xs sm:text-sm font-semibold text-slate-500 mt-1">
-                    October High Institute for Engineering & Technology (OHI)
+                <p class="en-font text-xs sm:text-sm font-bold text-ohiBlue mt-1 tracking-wide">
+                    October High Institute For Engineering & Technology (OHI)
                 </p>
-                <p id="display-tagline" class="mt-2.5 text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                    مؤسسة تعليمية رائدة معتمدة من وزارة التعليم العالي والمجلس الأعلى للجامعات - مدينة 6 أكتوبر
+                <p class="mt-2.5 text-xs sm:text-sm text-slate-600 max-w-lg mx-auto leading-relaxed">
+                    مؤسسة تعليمية رائدة معتمدة من وزارة التعليم العالي والمجلس الأعلى للجامعات • مدينة 6 أكتوبر
                 </p>
 
-                <!-- 3. Quick Action Buttons -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-6">
-                    <button onclick="downloadVCard()" class="gold-gradient hover:opacity-95 text-white font-bold py-3 px-3 rounded-2xl shadow-md flex flex-col items-center justify-center gap-1.5 transition cursor-pointer">
-                        <i class="fa-solid fa-address-card text-lg"></i>
-                        <span class="text-xs">حفظ جهة الاتصال</span>
-                    </button>
-
-                    <a id="btn-website" href="https://ohi.edu.eg/" target="_blank" rel="noopener noreferrer" class="bg-ohiNavy hover:bg-ohiNavyLight text-white font-bold py-3 px-3 rounded-2xl shadow-md flex flex-col items-center justify-center gap-1.5 transition">
+                <!-- Quick Top Links -->
+                <div class="grid grid-cols-3 gap-2.5 mt-6">
+                    <a href="https://ohi.edu.eg/" target="_blank" rel="noopener noreferrer" class="bg-ohiNavy hover:bg-ohiBlue text-white font-bold py-3 px-2 rounded-2xl shadow-md flex flex-col items-center justify-center gap-1.5 transition">
                         <i class="fa-solid fa-globe text-lg text-ohiGoldLight"></i>
                         <span class="text-xs">الموقع الرسمي</span>
                     </a>
 
-                    <a id="btn-facebook" href="https://www.facebook.com/share/p/1E5HYLe34f/" target="_blank" rel="noopener noreferrer" class="bg-[#1877F2] hover:opacity-90 text-white font-bold py-3 px-3 rounded-2xl shadow-md flex flex-col items-center justify-center gap-1.5 transition">
+                    <a href="https://www.facebook.com/ohinstitute/" target="_blank" rel="noopener noreferrer" class="bg-[#1877F2] hover:opacity-95 text-white font-bold py-3 px-2 rounded-2xl shadow-md flex flex-col items-center justify-center gap-1.5 transition">
                         <i class="fa-brands fa-facebook text-lg"></i>
-                        <span class="text-xs">صفحة فيسبوك</span>
+                        <span class="text-xs">فيسبوك الرسمي</span>
                     </a>
 
-                    <a id="btn-contact" href="https://ohi.edu.eg/arabic/?page_id=988605" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-3 rounded-2xl shadow-md flex flex-col items-center justify-center gap-1.5 transition">
+                    <a href="https://ohi.edu.eg/arabic/?page_id=988605" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-2 rounded-2xl shadow-md flex flex-col items-center justify-center gap-1.5 transition">
                         <i class="fa-solid fa-headset text-lg text-amber-400"></i>
                         <span class="text-xs">بيانات التواصل</span>
                     </a>
@@ -163,76 +197,72 @@
             </div>
         </section>
 
-        <!-- 2. Embedded Interactive All-in-One QR Code Card -->
+        <!-- 2. All-in-One QR Code Card -->
         <section id="qr-inline-card" class="glass-card rounded-3xl p-5 sm:p-6 shadow-md border border-slate-200 flex flex-col sm:flex-row items-center gap-6">
-            <div class="bg-white p-3 rounded-2xl border-2 border-ohiNavy/10 shadow-inner shrink-0">
-                <div id="qrcode-inline"></div>
+            <div class="bg-white p-3.5 rounded-2xl border-2 border-ohiBlue/20 shadow-inner shrink-0 flex items-center justify-center min-w-[172px] min-h-[172px]">
+                <div id="qrcode-inline" class="flex items-center justify-center"></div>
             </div>
             <div class="text-center sm:text-right flex-1 space-y-2.5">
-                <div class="inline-flex items-center gap-1.5 text-xs font-bold text-ohiGold bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>كود الاستجابة السريعة الشامل</span>
+                <div class="inline-flex items-center gap-1.5 text-xs font-bold text-ohiNavy bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                    <i class="fa-solid fa-qrcode text-ohiBlue"></i>
+                    <span>كود الاستجابة السريعة الشامل (All-in-One QR)</span>
                 </div>
-                <h2 class="text-lg font-extrabold text-ohiNavy">امسح الكود للوصول لكل روابط المعهد</h2>
+                <h2 class="text-lg font-extrabold text-ohiNavy">امسح الكود للوصول لكافة روابط المعهد</h2>
                 <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    يمكنك طباعة هذا الكود أو مشاركته على المطبوعات والبطاقات التعريفية ليصل الطلاب وأولياء الأمور لكافة الروابط بمسحة واحدة.
+                    يمكنك تحميل صورة الكود بجودة عالية لطباعتها على البروشورات والبطاقات التعريفية، ليصل الطلاب وأولياء الأمور لكافة الروابط بمسحة واحدة.
                 </p>
-                <div class="pt-1 flex flex-wrap justify-center sm:justify-start gap-2">
-                    <button onclick="downloadQRCode()" class="bg-ohiNavy hover:bg-ohiNavyLight text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition cursor-pointer">
+                <div class="pt-1 flex flex-wrap justify-center sm:justify-start gap-2.5">
+                    <button onclick="downloadQRCode()" class="bg-ohiNavy hover:bg-ohiBlue text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow transition cursor-pointer">
                         <i class="fa-solid fa-download text-ohiGoldLight"></i>
-                        <span>تحميل QR كصورة PNG</span>
+                        <span>تحميل كود QR للطباعة (PNG)</span>
                     </button>
                     <button onclick="copyCurrentUrl()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition cursor-pointer">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>نسخ رابط الصفحة</span>
+                        <i class="fa-regular fa-copy text-ohiBlue"></i>
+                        <span>نسخ رابط البطاقة</span>
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- 4. Categorized Sections -->
-
-        <!-- Category 1: الملف الرقمي والتواصل (Digital Profile & Contact) -->
+        <!-- 3. Quick Contact & Main Portals -->
         <section class="glass-card rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-ohiNavy text-ohiGoldLight flex items-center justify-center text-lg shadow-sm">
-                        <i class="fa-solid fa-id-badge"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">الملف الرقمي والتواصل</h2>
-                        <p class="en-font text-xs text-slate-400 font-medium">Digital Profile, Portals & Contact</p>
-                    </div>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-ohiNavy text-ohiGoldLight flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div>
+                    <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">البوابات الإلكترونية والتواصل</h2>
+                    <p class="en-font text-xs text-slate-400 font-semibold">Official Portals & Contact Information</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="links-digital-profile">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <!-- Official Website -->
-                <a id="link-official" href="https://ohi.edu.eg/" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <a href="https://ohi.edu.eg/" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-blue-100 text-ohiNavy flex items-center justify-center text-lg shrink-0">
-                        <i class="fa-solid fa-building-columns"></i>
+                        <i class="fa-solid fa-globe"></i>
                     </div>
                     <div class="overflow-hidden">
-                        <h3 class="font-bold text-sm text-slate-900 truncate">البوابة الإلكترونية الرسمية</h3>
+                        <h3 class="font-bold text-sm text-slate-900 truncate">الموقع الرسمي للمعهد</h3>
                         <p class="en-font text-xs text-slate-500 truncate">ohi.edu.eg</p>
                     </div>
                     <i class="fa-solid fa-arrow-up-left-from-square text-slate-400 text-xs mr-auto"></i>
                 </a>
 
-                <!-- Contact & Inquiries Page -->
-                <a id="link-contact-page" href="https://ohi.edu.eg/arabic/?page_id=988605" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Contact Page -->
+                <a href="https://ohi.edu.eg/arabic/?page_id=988605" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-amber-100 text-ohiGold flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-phone-volume"></i>
                     </div>
                     <div class="overflow-hidden">
-                        <h3 class="font-bold text-sm text-slate-900 truncate">بيانات التواصل والاستفسارات</h3>
-                        <p class="text-xs text-slate-500 truncate">الأرقام، العنوان، والخريطة</p>
+                        <h3 class="font-bold text-sm text-slate-900 truncate">صفحة بيانات التواصل</h3>
+                        <p class="text-xs text-slate-500 truncate">الأرقام، العنوان، والاستفسارات</p>
                     </div>
                     <i class="fa-solid fa-arrow-up-left-from-square text-slate-400 text-xs mr-auto"></i>
                 </a>
 
-                <!-- Student Information System (SIS) -->
-                <a id="link-sis" href="https://www.student.ohins.edu.eg/" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- SIS -->
+                <a href="https://www.student.ohins.edu.eg/" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-user-graduate"></i>
                     </div>
@@ -243,8 +273,8 @@
                     <i class="fa-solid fa-arrow-up-left-from-square text-slate-400 text-xs mr-auto"></i>
                 </a>
 
-                <!-- Moodle E-Learning -->
-                <a id="link-moodle" href="https://www.moodle.ohi.edu.eg/moodle/" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Moodle -->
+                <a href="https://www.moodle.ohi.edu.eg/moodle/" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-laptop-code"></i>
                     </div>
@@ -255,80 +285,64 @@
                     <i class="fa-solid fa-arrow-up-left-from-square text-slate-400 text-xs mr-auto"></i>
                 </a>
             </div>
-
-            <!-- Direct Contact Strip -->
-            <div class="bg-ohiNavy/5 rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-3 border border-ohiNavy/10">
-                <div class="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-ohiNavy">
-                    <i class="fa-solid fa-location-dot text-ohiGold"></i>
-                    <span id="display-address">مدينة 6 أكتوبر - الحي الثالث - المحور المركزي</span>
-                </div>
-                <div class="flex items-center gap-3 text-xs font-bold">
-                    <a id="display-phone-link" href="tel:0238353615" class="text-ohiNavy hover:text-ohiGold flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-                        <i class="fa-solid fa-phone text-ohiGold"></i>
-                        <span id="display-phone" dir="ltr">02 3835 3615</span>
-                    </a>
-                </div>
-            </div>
         </section>
 
-        <!-- Category 2: البرامج الأكاديمية (Academic Programs) -->
+        <!-- 4. Academic Programs Section -->
         <section class="glass-card rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-ohiGold text-white flex items-center justify-center text-lg shadow-sm">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">البرامج الأكاديمية والتخصصات</h2>
-                        <p class="en-font text-xs text-slate-400 font-medium">Academic Programs & Departments</p>
-                    </div>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-ohiGold text-white flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">البرامج الأكاديمية والتخصصات</h2>
+                    <p class="en-font text-xs text-slate-400 font-semibold">Academic Programs & Departments</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <!-- Architectural Engineering -->
-                <a href="https://ohi.edu.eg/arabic/?page_id=988496" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Architectural Engineering Program -->
+                <a href="https://ohi.edu.eg/arabic/?page_id=988853" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-compass-drafting"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-slate-900">الهندسة المعمارية</h3>
+                        <h3 class="font-bold text-sm text-slate-900">برنامج الهندسة المعمارية</h3>
                         <p class="en-font text-xs text-slate-500">Architectural Engineering</p>
                     </div>
                     <i class="fa-solid fa-chevron-left text-slate-400 text-xs mr-auto"></i>
                 </a>
 
-                <!-- Construction Engineering -->
-                <a href="https://ohi.edu.eg/arabic/?page_id=988498" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Construction Engineering Program -->
+                <a href="https://ohi.edu.eg/arabic/?page_id=988858" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-helmet-safety"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-slate-900">هندسة التشييد والبناء</h3>
+                        <h3 class="font-bold text-sm text-slate-900">برنامج هندسة التشييد والبناء</h3>
                         <p class="en-font text-xs text-slate-500">Construction Engineering</p>
                     </div>
                     <i class="fa-solid fa-chevron-left text-slate-400 text-xs mr-auto"></i>
                 </a>
 
-                <!-- Communications & Electronics Engineering -->
-                <a href="https://ohi.edu.eg/arabic/?page_id=988500" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Communications & Electronics Program -->
+                <a href="https://ohi.edu.eg/arabic/?page_id=988863" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-microchip"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-slate-900">هندسة الاتصالات والإلكترونيات</h3>
+                        <h3 class="font-bold text-sm text-slate-900">برنامج هندسة الاتصالات والإلكترونيات</h3>
                         <p class="en-font text-xs text-slate-500">Communications & Electronics</p>
                     </div>
                     <i class="fa-solid fa-chevron-left text-slate-400 text-xs mr-auto"></i>
                 </a>
 
-                <!-- Business Administration -->
-                <a href="https://ohi.edu.eg/arabic/?page_id=988502" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Business Administration Program -->
+                <a href="https://ohi.edu.eg/arabic/?page_id=988877" target="_blank" rel="noopener noreferrer" class="link-card flex items-center gap-3.5 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
                     <div class="w-11 h-11 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-chart-line"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-slate-900">شعبة إدارة الأعمال</h3>
+                        <h3 class="font-bold text-sm text-slate-900">برنامج إدارة الأعمال</h3>
                         <p class="en-font text-xs text-slate-500">Business Administration</p>
                     </div>
                     <i class="fa-solid fa-chevron-left text-slate-400 text-xs mr-auto"></i>
@@ -336,335 +350,231 @@
             </div>
         </section>
 
-        <!-- Category 3: شبكات التواصل الاجتماعي (Social Networks) -->
+        <!-- 5. Official Social Media Networks (6-item Grid) -->
         <section class="glass-card rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-sm">
-                        <i class="fa-solid fa-share-nodes"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">شبكات التواصل الاجتماعي</h2>
-                        <p class="en-font text-xs text-slate-400 font-medium">Official Social Networks</p>
-                    </div>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-ohiBlue text-white flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-share-nodes"></i>
+                </div>
+                <div>
+                    <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">شبكات التواصل الاجتماعي</h2>
+                    <p class="en-font text-xs text-slate-400 font-semibold">Official Social Media Networks</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <!-- Facebook -->
-                <a id="social-fb" href="https://www.facebook.com/share/p/1E5HYLe34f/" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-[#1877F2]/5 border border-[#1877F2]/20 hover:bg-[#1877F2]/10 text-center gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <!-- 1. Facebook -->
+                <a href="https://www.facebook.com/ohinstitute/" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-[#1877F2]/5 border border-[#1877F2]/20 hover:bg-[#1877F2]/10 text-center gap-2">
                     <div class="w-11 h-11 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-xl shadow-sm">
                         <i class="fa-brands fa-facebook-f"></i>
                     </div>
-                    <span class="font-bold text-xs text-slate-800">فيسبوك الرسمي</span>
+                    <span class="font-bold text-xs text-slate-800">فيسبوك</span>
                 </a>
 
-                <!-- YouTube -->
-                <a id="social-yt" href="https://ohi.edu.eg/" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-red-500/5 border border-red-500/20 hover:bg-red-500/10 text-center gap-2">
+                <!-- 2. LinkedIn -->
+                <a href="https://www.linkedin.com/company/october-high-institute-for-engineering-technology/?viewAsMember=true" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-[#0A66C2]/5 border border-[#0A66C2]/20 hover:bg-[#0A66C2]/10 text-center gap-2">
+                    <div class="w-11 h-11 rounded-full bg-[#0A66C2] text-white flex items-center justify-center text-xl shadow-sm">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </div>
+                    <span class="font-bold text-xs text-slate-800">لينكدإن</span>
+                </a>
+
+                <!-- 3. YouTube -->
+                <a href="https://www.youtube.com/@ohi.channel-r4r" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-red-600/5 border border-red-600/20 hover:bg-red-600/10 text-center gap-2">
                     <div class="w-11 h-11 rounded-full bg-red-600 text-white flex items-center justify-center text-xl shadow-sm">
                         <i class="fa-brands fa-youtube"></i>
                     </div>
-                    <span class="font-bold text-xs text-slate-800">قناة يوتيوب</span>
+                    <span class="font-bold text-xs text-slate-800">يوتيوب</span>
                 </a>
 
-                <!-- Instagram -->
-                <a id="social-ig" href="https://ohi.edu.eg/" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-pink-500/5 border border-pink-500/20 hover:bg-pink-500/10 text-center gap-2">
+                <!-- 4. Instagram -->
+                <a href="https://www.instagram.com/ohi_1993?igsh=MTk0NDRmeTVkcTAwdg==" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-pink-600/5 border border-pink-600/20 hover:bg-pink-600/10 text-center gap-2">
                     <div class="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 via-pink-600 to-purple-600 text-white flex items-center justify-center text-xl shadow-sm">
                         <i class="fa-brands fa-instagram"></i>
                     </div>
                     <span class="font-bold text-xs text-slate-800">إنستجرام</span>
                 </a>
 
-                <!-- LinkedIn -->
-                <a id="social-li" href="https://ohi.edu.eg/" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-sky-600/5 border border-sky-600/20 hover:bg-sky-600/10 text-center gap-2">
-                    <div class="w-11 h-11 rounded-full bg-[#0A66C2] text-white flex items-center justify-center text-xl shadow-sm">
-                        <i class="fa-brands fa-linkedin-in"></i>
+                <!-- 5. TikTok -->
+                <a href="https://www.tiktok.com/@ohichannel2?lang=en" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-900/5 border border-slate-900/15 hover:bg-slate-900/10 text-center gap-2">
+                    <div class="w-11 h-11 rounded-full bg-slate-950 text-white flex items-center justify-center text-xl shadow-sm">
+                        <i class="fa-brands fa-tiktok"></i>
                     </div>
-                    <span class="font-bold text-xs text-slate-800">لينكدإن</span>
+                    <span class="font-bold text-xs text-slate-800">تيك توك</span>
+                </a>
+
+                <!-- 6. X (Twitter) -->
+                <a href="https://x.com/Ohi_1993?t=CR7XGv85UTSDwvWieBGDaA&s=09" target="_blank" rel="noopener noreferrer" class="link-card flex flex-col items-center justify-center p-4 rounded-2xl bg-neutral-900/5 border border-neutral-900/15 hover:bg-neutral-900/10 text-center gap-2">
+                    <div class="w-11 h-11 rounded-full bg-black text-white flex items-center justify-center text-xl shadow-sm">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </div>
+                    <span class="font-bold text-xs text-slate-800">إكس (X)</span>
                 </a>
             </div>
         </section>
 
-        <!-- Category 4: أدلة وخدمات الطلاب (Student Guides & Services) -->
+        <!-- 6. Student Guides & Alumni Services -->
         <section class="glass-card rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-slate-800 text-ohiGoldLight flex items-center justify-center text-lg shadow-sm">
-                        <i class="fa-solid fa-folder-open"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">أدلة وخدمات الطلاب والخريجين</h2>
-                        <p class="en-font text-xs text-slate-400 font-medium">Student Guides, PDFs & Alumni Services</p>
-                    </div>
+            <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 text-ohiGoldLight flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <div>
+                    <h2 class="text-base sm:text-lg font-extrabold text-ohiNavy">أدلة وخدمات الطلاب والخريجين</h2>
+                    <p class="en-font text-xs text-slate-400 font-semibold">Student Guides & Alumni Registration</p>
                 </div>
             </div>
 
             <div class="space-y-2.5">
-                <!-- Engineering Student Guide PDF -->
-                <a href="https://ohi.edu.eg/arabic/?page_id=988565" target="_blank" rel="noopener noreferrer" class="link-card flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Engineering Guide PDF -->
+                <a href="https://stage.ohi.edu.eg/wp-content/uploads/2025/03/332_%D8%AF%D9%84%D9%8A%D9%84-%D8%A7%D9%84%D8%B7%D8%A7%D9%84%D8%A8-%D9%86%D9%87%D8%A7%D8%A6%D9%8A-.pdf" target="_blank" rel="noopener noreferrer" class="link-card flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 gap-3">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-lg shrink-0">
                             <i class="fa-solid fa-file-pdf"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-sm text-slate-900">دليل الطالب - شعبة الهندسة (PDF)</h3>
+                            <h3 class="font-bold text-sm text-slate-900">دليل الطالب - برامج الهندسة (PDF)</h3>
                             <p class="text-xs text-slate-500">اللوائح الدراسية، المقررات، ونظام الساعات المعتمدة</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-ohiNavy bg-white px-3 py-1.5 rounded-lg border border-slate-200">عرض</span>
+                    <span class="text-xs font-bold text-ohiNavy bg-white px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">تحميل</span>
                 </a>
 
-                <!-- Business Student Guide PDF -->
-                <a href="https://ohi.edu.eg/arabic/?page_id=988567" target="_blank" rel="noopener noreferrer" class="link-card flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Business Administration Guide PDF -->
+                <a href="https://ohi.edu.eg/arabic/wp-content/uploads/2025/11/%D8%AF%D9%84%D9%8A%D9%84-%D8%A7%D9%84%D8%B7%D8%A7%D9%84%D8%A8.pdf" target="_blank" rel="noopener noreferrer" class="link-card flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 gap-3">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-lg shrink-0">
                             <i class="fa-solid fa-file-pdf"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-sm text-slate-900">دليل الطالب - شعبة إدارة الأعمال (PDF)</h3>
+                            <h3 class="font-bold text-sm text-slate-900">دليل الطالب - برامج إدارة الأعمال (PDF)</h3>
                             <p class="text-xs text-slate-500">دليل التخصصات الإدارية والمحاسبية ونظم المعلومات</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-ohiNavy bg-white px-3 py-1.5 rounded-lg border border-slate-200">عرض</span>
+                    <span class="text-xs font-bold text-ohiNavy bg-white px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">تحميل</span>
                 </a>
 
-                <!-- Alumni Unit -->
-                <a href="https://ohi.edu.eg/arabic/?page_id=988585" target="_blank" rel="noopener noreferrer" class="link-card flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                <!-- Alumni Unit Registration -->
+                <a href="https://forms.cloud.microsoft/pages/responsepage.aspx?id=WaSAAiEF4UqGrFhpaO5fAhJV9gtKtgpJtOFO8kTBcVZUQTMxVUFDQkYwNVpPRVgxTlY3VjA0QjYxMC4u&route=shorturl" target="_blank" rel="noopener noreferrer" class="link-card flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 gap-3">
                     <div class="flex items-center gap-3.5">
                         <div class="w-10 h-10 rounded-xl bg-amber-100 text-ohiGold flex items-center justify-center text-lg shrink-0">
                             <i class="fa-solid fa-award"></i>
                         </div>
                         <div>
-                            <h3 class="font-bold text-sm text-slate-900">وحدة متابعة الخريجين والتوظيف</h3>
-                            <p class="text-xs text-slate-500">التواصل مع الخريجين، التدريب الميداني، وملتقيات التوظيف</p>
+                            <h3 class="font-bold text-sm text-slate-900">تسجيل وحدة الخريجين</h3>
+                            <p class="text-xs text-slate-500">استمارة التسجيل الرسمية لخريجي المعهد والتواصل الوظيفي</p>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-ohiNavy bg-white px-3 py-1.5 rounded-lg border border-slate-200">دخول</span>
+                    <span class="text-xs font-bold text-ohiNavy bg-white px-3 py-1.5 rounded-lg border border-slate-200 shrink-0">تسجيل</span>
                 </a>
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="text-center pt-4 pb-6 text-xs text-slate-500 space-y-1">
-            <p class="font-bold text-ohiNavy">معهد أكتوبر العالي للهندسة والتكنولوجيا (OHI)</p>
-            <p class="en-font">All-in-One Digital Smart Card & QR Identity</p>
+        <!-- 7. Footer & Developer Credit -->
+        <footer class="text-center pt-4 pb-4 space-y-3">
+            <div class="text-xs text-slate-500 space-y-1">
+                <p class="font-bold text-ohiNavy">معهد أكتوبر العالي للهندسة والتكنولوجيا © 2026</p>
+                <p class="en-font text-[11px] text-slate-400">October High Institute For Engineering & Technology (OHI)</p>
+            </div>
+            
+            <div class="pt-2 border-t border-slate-200/80 max-w-xs mx-auto">
+                <p class="en-font text-[11px] font-semibold tracking-wider text-slate-500">
+                    Developed &amp; Designed by <span class="font-extrabold text-ohiNavy">MOATAZGEWALLY</span>
+                </p>
+            </div>
         </footer>
     </main>
 
-    <!-- MODAL 1: Fullscreen QR Code Modal -->
+    <!-- Fullscreen QR Code Modal -->
     <div id="qrModal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-200 relative animate-fade-in">
-            <button onclick="toggleQrModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-200 relative">
+            <button onclick="toggleQrModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition cursor-pointer" aria-label="إغلاق">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <div class="w-14 h-14 mx-auto bg-ohiNavy/5 rounded-2xl p-2 flex items-center justify-center mb-3">
-                <img src="https://ohi.edu.eg/arabic/wp-content/uploads/2024/05/cropped-logo-svg-2.png" alt="OHI" class="w-full h-full object-contain">
-            </div>
+            <h3 class="text-lg font-extrabold text-ohiNavy mt-1">كود QR الشامل للمعهد</h3>
+            <p class="text-xs text-slate-500 mt-1 mb-5">وجه كاميرا الهاتف لمسح الكود وفتح البوابة الرقمية</p>
 
-            <h3 class="text-lg font-extrabold text-ohiNavy">كود QR الشامل للمعهد</h3>
-            <p class="text-xs text-slate-500 mt-1 mb-5">وجه كاميرا الهاتف لمسح الكود وفتح الهوية الرقمية</p>
-
-            <div class="bg-slate-50 p-4 rounded-2xl border-2 border-ohiGold/40 inline-block shadow-inner">
+            <div class="bg-slate-50 p-4 rounded-2xl border-2 border-ohiBlue/25 inline-flex items-center justify-center shadow-inner min-w-[244px] min-h-[244px]">
                 <div id="qrcode-modal"></div>
             </div>
 
             <p id="qr-target-url-display" class="en-font text-[11px] text-slate-400 mt-3 truncate px-2"></p>
 
             <div class="grid grid-cols-2 gap-2.5 mt-5">
-                <button onclick="downloadQRCode()" class="gold-gradient text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow cursor-pointer">
-                    <i class="fa-solid fa-download"></i>
+                <button onclick="downloadQRCode()" class="bg-ohiNavy hover:bg-ohiBlue text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow transition cursor-pointer">
+                    <i class="fa-solid fa-download text-ohiGoldLight"></i>
                     <span>تحميل PNG</span>
                 </button>
-                <button onclick="copyCurrentUrl()" class="bg-ohiNavy text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow cursor-pointer">
-                    <i class="fa-regular fa-copy"></i>
+                <button onclick="copyCurrentUrl()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 transition cursor-pointer">
+                    <i class="fa-regular fa-copy text-ohiBlue"></i>
                     <span>نسخ الرابط</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: Customize / Edit Profile Modal -->
-    <div id="editModal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative my-8">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-sliders text-ohiGold text-lg"></i>
-                    <h3 class="text-lg font-extrabold text-ohiNavy">تخصيص وتعديل البيانات والروابط</h3>
-                </div>
-                <button onclick="toggleEditModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form id="editForm" onsubmit="saveCustomizations(event)" class="space-y-3.5 max-h-[70vh] overflow-y-auto px-1">
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم الجهة / الاسم الشخصي (عربي)</label>
-                    <input type="text" id="input-name-ar" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">الاسم بالإنجليزية (English Title)</label>
-                    <input type="text" id="input-name-en" dir="ltr" class="en-font w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">الوصف المختصر (Tagline)</label>
-                    <input type="text" id="input-tagline" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف (للاتصال وملف vCard)</label>
-                        <input type="text" id="input-phone" dir="ltr" class="en-font w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">البريد الإلكتروني (Email)</label>
-                        <input type="email" id="input-email" dir="ltr" class="en-font w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">العنوان</label>
-                    <input type="text" id="input-address" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">رابط الموقع الرسمي (Website URL)</label>
-                    <input type="url" id="input-website" dir="ltr" class="en-font w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">رابط صفحة فيسبوك (Facebook URL)</label>
-                    <input type="url" id="input-facebook" dir="ltr" class="en-font w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">رابط صفحة بيانات التواصل</label>
-                    <input type="url" id="input-contact" dir="ltr" class="en-font w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
-                    <label class="block text-xs font-bold text-ohiNavy mb-1">
-                        <i class="fa-solid fa-qrcode text-ohiGold ml-1"></i>
-                        رابط كود QR المخصص (اتركه فارغاً لاستخدام رابط الصفحة الحالي تلقائياً)
-                    </label>
-                    <input type="url" id="input-qr-url" dir="ltr" placeholder="https://ohi.edu.eg/" class="en-font w-full px-3.5 py-2 rounded-xl border border-amber-300 bg-white text-sm focus:outline-none focus:border-ohiGold">
-                </div>
-
-                <div class="flex items-center justify-between pt-3 border-t border-slate-100 gap-2">
-                    <button type="button" onclick="resetDefaults()" class="text-xs font-bold text-red-600 hover:bg-red-50 px-3 py-2.5 rounded-xl transition cursor-pointer">
-                        استعادة الافتراضي
-                    </button>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="toggleEditModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer">
-                            إلغاء
-                        </button>
-                        <button type="submit" class="gold-gradient text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow transition cursor-pointer">
-                            حفظ وتحديث الكود
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
-        // Default Profile Data for OHI
-        const defaultData = {
-            nameAr: "معهد أكتوبر العالي للهندسة والتكنولوجيا",
-            nameEn: "October High Institute for Engineering & Technology (OHI)",
-            tagline: "مؤسسة تعليمية رائدة معتمدة من وزارة التعليم العالي والمجلس الأعلى للجامعات - مدينة 6 أكتوبر",
-            phone: "0238353615",
-            email: "info@ohi.edu.eg",
-            address: "مدينة 6 أكتوبر - الحي الثالث - المحور المركزي",
-            website: "https://ohi.edu.eg/",
-            facebook: "https://www.facebook.com/share/p/1E5HYLe34f/",
-            contactPage: "https://ohi.edu.eg/arabic/?page_id=988605",
-            customQrUrl: ""
-        };
+        const DEFAULT_FALLBACK_URL = "https://ohi-vcard.vercel.app";
 
-        let profileData = { ...defaultData };
-
-        // Load saved data from localStorage if available
-        function loadSavedData() {
-            try {
-                const saved = localStorage.getItem('ohi_digital_profile_v1');
-                if (saved) {
-                    profileData = { ...defaultData, ...JSON.parse(saved) };
-                }
-            } catch (e) {
-                console.warn("Could not read from localStorage:", e);
-            }
-            applyDataToUI();
-        }
-
-        // Determine target URL for QR Code
+        // Determine the active URL to encode in the QR Code
         function getQrTargetUrl() {
-            if (profileData.customQrUrl && profileData.customQrUrl.trim() !== "") {
-                return profileData.customQrUrl.trim();
-            }
-            // Fallback to current URL if hosted on http/https, otherwise default to official website
-            const currentHref = window.location.href;
-            if (currentHref.startsWith('http://') || currentHref.startsWith('https://')) {
-                return currentHref;
-            }
-            return profileData.website;
+            try {
+                const href = window.location.href;
+                // Use live URL when hosted on http/https (excluding sandboxed blob/srcdoc previews)
+                if ((href.startsWith('http://') || href.startsWith('https://')) && !href.includes('usercontent.goog') && !href.includes('localhost')) {
+                    return href.split('#')[0];
+                }
+            } catch (e) {}
+            return DEFAULT_FALLBACK_URL;
         }
 
-        // Render both Inline and Modal QR Codes
-        function renderQRCodes() {
-            const targetUrl = getQrTargetUrl();
-            
-            const inlineContainer = document.getElementById('qrcode-inline');
-            const modalContainer = document.getElementById('qrcode-modal');
-            const urlDisplay = document.getElementById('qr-target-url-display');
+        // Render QR Code reliably into a container with image fallback
+        function renderSingleQR(container, text, size) {
+            if (!container) return;
+            container.innerHTML = "";
+            let generated = false;
 
-            inlineContainer.innerHTML = "";
-            modalContainer.innerHTML = "";
+            try {
+                if (typeof QRCode !== "undefined") {
+                    new QRCode(container, {
+                        text: text,
+                        width: size,
+                        height: size,
+                        colorDark: "#003366",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    generated = true;
+                }
+            } catch (err) {
+                console.warn("QRCode library error, switching to fallback image:", err);
+            }
+
+            // Fallback image backup if canvas/library fails to render
+            setTimeout(() => {
+                const hasCanvasOrImg = container.querySelector('canvas') || container.querySelector('img[src^="data:"]');
+                if (!generated || !hasCanvasOrImg) {
+                    const img = document.createElement('img');
+                    img.src = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&color=003366&bgcolor=ffffff&margin=4&data=${encodeURIComponent(text)}`;
+                    img.alt = "OHI All-in-One QR Code";
+                    img.width = size;
+                    img.height = size;
+                    img.className = "rounded-lg";
+                    container.innerHTML = "";
+                    container.appendChild(img);
+                }
+            }, 120);
+        }
+
+        // Initialize both Inline and Modal QR Codes
+        function initQRCodes() {
+            const targetUrl = getQrTargetUrl();
+            const urlDisplay = document.getElementById('qr-target-url-display');
             if (urlDisplay) urlDisplay.textContent = targetUrl;
 
-            // Generate Inline QR (140x140)
-            new QRCode(inlineContainer, {
-                text: targetUrl,
-                width: 140,
-                height: 140,
-                colorDark: "#0F294A",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-
-            // Generate High-Res Modal QR (220x220)
-            new QRCode(modalContainer, {
-                text: targetUrl,
-                width: 220,
-                height: 220,
-                colorDark: "#0F294A",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
-
-        // Apply profileData to all UI elements
-        function applyDataToUI() {
-            document.getElementById('display-name-ar').textContent = profileData.nameAr;
-            document.getElementById('display-name-en').textContent = profileData.nameEn;
-            document.getElementById('display-tagline').textContent = profileData.tagline;
-            document.getElementById('display-address').textContent = profileData.address;
-            document.getElementById('display-phone').textContent = profileData.phone;
-            document.getElementById('display-phone-link').href = `tel:${profileData.phone.replace(/\s+/g, '')}`;
-
-            // Update Action Buttons & Links
-            document.getElementById('btn-website').href = profileData.website;
-            document.getElementById('link-official').href = profileData.website;
-
-            document.getElementById('btn-facebook').href = profileData.facebook;
-            document.getElementById('social-fb').href = profileData.facebook;
-
-            document.getElementById('btn-contact').href = profileData.contactPage;
-            document.getElementById('link-contact-page').href = profileData.contactPage;
-
-            renderQRCodes();
+            renderSingleQR(document.getElementById('qrcode-inline'), targetUrl, 148);
+            renderSingleQR(document.getElementById('qrcode-modal'), targetUrl, 210);
         }
 
         // Show Toast Notification
@@ -674,8 +584,8 @@
             const iconEl = document.getElementById('toast-icon');
 
             msgEl.textContent = message;
-            iconEl.className = isError 
-                ? "fa-solid fa-circle-exclamation text-red-400 text-lg" 
+            iconEl.className = isError
+                ? "fa-solid fa-circle-exclamation text-red-400 text-lg"
                 : "fa-solid fa-circle-check text-ohiGoldLight text-lg";
 
             toast.classList.remove('hidden');
@@ -685,77 +595,76 @@
             }, 3000);
         }
 
-        // Generate & Download .vcf vCard File
-        function downloadVCard() {
-            const vcardLines = [
-                "BEGIN:VCARD",
-                "VERSION:3.0",
-                `FN:${profileData.nameAr}`,
-                `ORG:${profileData.nameAr};${profileData.nameEn}`,
-                `TEL;TYPE=WORK,VOICE:${profileData.phone}`,
-                `EMAIL;TYPE=PREF,INTERNET:${profileData.email}`,
-                `URL:${profileData.website}`,
-                `ADR;TYPE=WORK:;;${profileData.address};6th of October City;Giza;;Egypt`,
-                `NOTE:Facebook: ${profileData.facebook} | Contact: ${profileData.contactPage}`,
-                "END:VCARD"
-            ];
-
-            const vcardBlob = new Blob([vcardLines.join("\r\n")], { type: "text/vcard;charset=utf-8" });
-            const url = URL.createObjectURL(vcardBlob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "OHI_Contact.vcf";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            showToast("تم تحميل بطاقة جهة الاتصال (vCard) بنجاح!");
-        }
-
-        // Download High-Res QR Code as PNG
+        // Export High-Resolution Print-Ready PNG with White Padding & OHI Label
         function downloadQRCode() {
-            // Create a temporary hidden container for high-res 600x600 QR export
-            const tempDiv = document.createElement('div');
             const targetUrl = getQrTargetUrl();
-            
-            new QRCode(tempDiv, {
-                text: targetUrl,
-                width: 600,
-                height: 600,
-                colorDark: "#0F294A",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'fixed';
+            tempDiv.style.left = '-9999px';
+            document.body.appendChild(tempDiv);
 
-            setTimeout(() => {
-                const canvas = tempDiv.querySelector('canvas');
-                if (canvas) {
-                    // Add white padding border around QR for clean scanning
-                    const paddedCanvas = document.createElement('canvas');
-                    const padding = 48;
-                    paddedCanvas.width = canvas.width + padding * 2;
-                    paddedCanvas.height = canvas.height + padding * 2;
-                    const ctx = paddedCanvas.getContext('2d');
-                    ctx.fillStyle = "#FFFFFF";
-                    ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
-                    ctx.drawImage(canvas, padding, padding);
+            try {
+                new QRCode(tempDiv, {
+                    text: targetUrl,
+                    width: 600,
+                    height: 600,
+                    colorDark: "#003366",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
 
-                    const pngUrl = paddedCanvas.toDataURL("image/png");
-                    const link = document.createElement("a");
-                    link.href = pngUrl;
-                    link.download = "OHI_All_In_One_QR.png";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    showToast("تم تحميل صورة كود QR بجودة عالية!");
-                } else {
-                    showToast("تعذر توليد الصورة، حاول مرة أخرى", true);
-                }
-            }, 150);
+                setTimeout(() => {
+                    const sourceCanvas = tempDiv.querySelector('canvas');
+                    if (sourceCanvas) {
+                        const padding = 56;
+                        const labelHeight = 76;
+                        const exportCanvas = document.createElement('canvas');
+                        exportCanvas.width = sourceCanvas.width + padding * 2;
+                        exportCanvas.height = sourceCanvas.height + padding * 2 + labelHeight;
+
+                        const ctx = exportCanvas.getContext('2d');
+                        // White background
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+                        // Subtle border frame
+                        ctx.strokeStyle = "#E2E8F0";
+                        ctx.lineWidth = 4;
+                        ctx.strokeRect(12, 12, exportCanvas.width - 24, exportCanvas.height - 24);
+
+                        // Draw QR Code
+                        ctx.drawImage(sourceCanvas, padding, padding);
+
+                        // Draw OHI Label underneath
+                        ctx.fillStyle = "#003366";
+                        ctx.font = "bold 28px 'Plus Jakarta Sans', Arial, sans-serif";
+                        ctx.textAlign = "center";
+                        ctx.fillText("October High Institute (OHI)", exportCanvas.width / 2, sourceCanvas.height + padding + 42);
+
+                        ctx.fillStyle = "#64748B";
+                        ctx.font = "600 18px 'Plus Jakarta Sans', Arial, sans-serif";
+                        ctx.fillText("Scan for All Official Links & Programs", exportCanvas.width / 2, sourceCanvas.height + padding + 72);
+
+                        const pngUrl = exportCanvas.toDataURL("image/png");
+                        const link = document.createElement("a");
+                        link.href = pngUrl;
+                        link.download = "OHI_All_In_One_QR.png";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        showToast("تم تحميل صورة كود QR للطباعة بنجاح!");
+                    } else {
+                        showToast("تعذر توليد الصورة، حاول مرة أخرى", true);
+                    }
+                    document.body.removeChild(tempDiv);
+                }, 180);
+            } catch (e) {
+                document.body.removeChild(tempDiv);
+                showToast("حدث خطأ أثناء تحميل الكود", true);
+            }
         }
 
-        // Copy URL to Clipboard (using execCommand fallback for iframe compatibility)
+        // Copy Link to Clipboard (iFrame-safe execCommand fallback)
         function copyCurrentUrl() {
             const urlToCopy = getQrTargetUrl();
             const textArea = document.createElement("textarea");
@@ -767,7 +676,7 @@
             textArea.select();
             try {
                 document.execCommand('copy');
-                showToast("تم نسخ الرابط إلى الحافظة!");
+                showToast("تم النسخ");
             } catch (err) {
                 showToast("لم نتمكن من نسخ الرابط تلقائياً", true);
             }
@@ -779,8 +688,8 @@
             const urlToShare = getQrTargetUrl();
             if (navigator.share) {
                 navigator.share({
-                    title: profileData.nameAr,
-                    text: profileData.tagline,
+                    title: "معهد أكتوبر العالي للهندسة والتكنولوجيا (OHI)",
+                    text: "البوابة الرقمية الشاملة لجميع روابط وبرامج المعهد",
                     url: urlToShare
                 }).catch(() => {});
             } else {
@@ -788,71 +697,14 @@
             }
         }
 
-        // Toggle QR Modal
+        // Toggle QR Fullscreen Modal
         function toggleQrModal() {
             const modal = document.getElementById('qrModal');
             modal.classList.toggle('hidden');
         }
 
-        // Toggle Edit Modal & Populate Inputs
-        function toggleEditModal() {
-            const modal = document.getElementById('editModal');
-            const isHidden = modal.classList.contains('hidden');
-            if (isHidden) {
-                document.getElementById('input-name-ar').value = profileData.nameAr;
-                document.getElementById('input-name-en').value = profileData.nameEn;
-                document.getElementById('input-tagline').value = profileData.tagline;
-                document.getElementById('input-phone').value = profileData.phone;
-                document.getElementById('input-email').value = profileData.email;
-                document.getElementById('input-address').value = profileData.address;
-                document.getElementById('input-website').value = profileData.website;
-                document.getElementById('input-facebook').value = profileData.facebook;
-                document.getElementById('input-contact').value = profileData.contactPage;
-                document.getElementById('input-qr-url').value = profileData.customQrUrl;
-            }
-            modal.classList.toggle('hidden');
-        }
-
-        // Save Form Customizations
-        function saveCustomizations(event) {
-            event.preventDefault();
-            profileData = {
-                nameAr: document.getElementById('input-name-ar').value.trim() || defaultData.nameAr,
-                nameEn: document.getElementById('input-name-en').value.trim() || defaultData.nameEn,
-                tagline: document.getElementById('input-tagline').value.trim() || defaultData.tagline,
-                phone: document.getElementById('input-phone').value.trim() || defaultData.phone,
-                email: document.getElementById('input-email').value.trim() || defaultData.email,
-                address: document.getElementById('input-address').value.trim() || defaultData.address,
-                website: document.getElementById('input-website').value.trim() || defaultData.website,
-                facebook: document.getElementById('input-facebook').value.trim() || defaultData.facebook,
-                contactPage: document.getElementById('input-contact').value.trim() || defaultData.contactPage,
-                customQrUrl: document.getElementById('input-qr-url').value.trim()
-            };
-
-            try {
-                localStorage.setItem('ohi_digital_profile_v1', JSON.stringify(profileData));
-            } catch (e) {
-                console.warn("Could not save to localStorage:", e);
-            }
-
-            applyDataToUI();
-            toggleEditModal();
-            showToast("تم حفظ التعديلات وتحديث كود QR وبطاقة الاتصال!");
-        }
-
-        // Reset to Default OHI Data
-        function resetDefaults() {
-            profileData = { ...defaultData };
-            try {
-                localStorage.removeItem('ohi_digital_profile_v1');
-            } catch (e) {}
-            applyDataToUI();
-            toggleEditModal();
-            showToast("تمت استعادة البيانات الافتراضية للمعهد");
-        }
-
-        // Initialize on Window Load
-        window.addEventListener('DOMContentLoaded', loadSavedData);
+        // Run on window load
+        window.addEventListener('load', initQRCodes);
     </script>
 </body>
 </html>
